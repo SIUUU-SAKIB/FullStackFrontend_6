@@ -1,0 +1,26 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+@import "tailwindcss";
+/* *{
+    font-family: "Poppins", sans-serif;
+} */
+
+:root{
+--primary-color:#FF3F39;
+--font:"Poppins", sans-serif;
+}
+.border {
+    border-bottom: white;
+    opacity: 50%;
+    border: 0.5px;
+}
+
+
+input:-webkit-autofill,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:hover,
+input:-moz-autofill {
+  box-shadow: 0 0 0px 1000px #f4f4f5 inset !important; /* zinc-100 */
+  -webkit-text-fill-color: #374151 !important; /* gray-700 */
+  -moz-text-fill-color: #374151 !important;
+}
