@@ -2,42 +2,52 @@ import { useState } from 'react'
 import Navbar from '../component/Navbar'
 import { IoEye } from 'react-icons/io5'
 import { IoMdEyeOff } from 'react-icons/io'
-import { Link } from 'react-router-dom'
-import { useLoginMutation, useMeQuery, useRegisterMutation } from '../redux/slices/authApi'
+import { Link, useNavigate } from 'react-router-dom'
+import { useLoginMutation, useMeQuery } from '../redux/slices/authApi'
 import RegLoader from '../utils/RegLoader'
+import Swal from 'sweetalert2'
+
 
 const Login = () => {
-  
+
   const [eye, setEye] = useState<boolean>(false)
   const [email, setEmail] = useState<string>('')
   const [password, setPassword] = useState<string>('')
   const [login, { isLoading }] = useLoginMutation()
-  const { data } = useMeQuery(undefined)
-console.log(data)
-  if (isLoading) {
-    return <RegLoader />
-  }
-  const submitRegister = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const {refetch } = useMeQuery(undefined)
+  const [wrongPass, setWrongPass] = useState<boolean>(false)
+  const navigate = useNavigate()
 
+
+  if (isLoading) {
+    return <RegLoader />;
+  }
+
+  const submitLogin = async (e: React.FormEvent) => {
+    e.preventDefault()
     try {
-      const res = await login({
+      await login({
         email,
         password,
       }).unwrap()
-      console.log('success 😍😍😍', res)
-      console.log(res.message, res.statusCode)
-
-    } catch (error) {
-      console.log("Register failed", error)
+      refetch()
+      setEmail('')
+      setPassword('')
+      navigate('/')
+    } catch (error: any) {
+      if(error.data.message === "User/Admin does not exist"){
+        Swal.fire("ooops! User does not Exist");
+        return
+      }
+      if (error.status === 401) {
+        setWrongPass(true)  
+      }else {
+        setWrongPass(false)
+      }
     }
 
-    setEmail('')
-    setPassword('')
-
-
-
   }
+
   return (
     <div className='min-w-screen'>
       <div className='bg-[url("https://cdn.prod.website-files.com/672544f2398bd9ac165adaa2/673a237aaab857de30d1cb01_trucks-highway-mountain-sunset%20Large.jpeg")] h-[500px] bg-cover bg-center'>
@@ -50,7 +60,7 @@ console.log(data)
       </div>
       {/* form */}
       <div className='py-16 max-w-screen-xl mx-auto  bg-zinc-50'>
-        <form onSubmit={submitRegister} className='max-w-screen-sm mx-auto flex flex-col items-center justify-center gap-4 py-8 px-4 bg-white  shadow-sm'>
+        <form onSubmit={submitLogin} className='max-w-screen-sm mx-auto flex flex-col items-center justify-center gap-4 py-8 px-4 bg-white  shadow-sm'>
           <h1 className='font-bold text-4xl text-center '>Login</h1>
           <div className='flex flex-col w-full gap-8  px-4 py-8'>
 
@@ -58,25 +68,28 @@ console.log(data)
              focus:outline-none  focus:rounded-lg'/>
 
 
-            <div className='flex bg-zinc-100 items-center justify-between w-full'>
+            <div className={`${wrongPass === false ? "bg-zinc-100" : "bg-red-300"} flex  items-center justify-between w-full relative`}>
               <input
                 onChange={(e) => setPassword(e.target.value)}
                 value={password}
                 type={eye ? 'text' : 'password'}
-                placeholder="Password"
+                placeholder={wrongPass === false ? "Password" : "Wrong Password "}
                 required
-                className="
+                className={`
     py-4 px-4 text-lg text-black/70 font-medium
     focus:outline-none focus:ring-0 border-none focus:rounded-lg
-    bg-zinc-100 w-full
+     w-full
     autofill:bg-zinc-100 autofill:text-black/70
-  "
+  `}
               />
 
               <div>
                 <IoMdEyeOff onClick={() => setEye(true)} className={`text-xl mr-4 cursor-pointer ${eye === true ? 'hidden' : 'block'}`} />
                 <IoEye onClick={() => setEye(false)} className={`text-xl mr-4 cursor-pointer ${eye === true ? 'block' : 'hidden'} `} />
               </div>
+              {
+                wrongPass === false ? "" : <p className='absolute top-15 text-red-500 left-2'>Wrong Password</p>
+              }
             </div>
 
 

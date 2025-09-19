@@ -4,10 +4,15 @@ import MainLayout from "../Layout/MainLayout.";
 import HomePage from "../pages/HomePage";
 import ServicePage from "../pages/ServicePage";
 import About from "../pages/About";
-import ParcelForm from "../pages/ParcelForm";
+import ParcelForm from "../pages/Parcel/ParcelForm";
 import Register from "../pages/Register";
-import LoginForm from "../pages/Login";
 import Login from "../pages/Login";
+import UserDashboard from "../AllDashboard/UserDashboard";
+import Dashboard from "../AllDashboard/Dashboard";
+import ReceiverDashboard from "../AllDashboard/ReceiverDashboard";
+import AdminDashboard from "../AllDashboard/AdminDashboard";
+import NotFound from "../component/NotFound";
+import CreateAdmin from "../component/CreateAdmin";
 
 const router = createBrowserRouter([
     {
@@ -25,18 +30,49 @@ const router = createBrowserRouter([
                 path: '/about',
                 element: <About />
             }, {
-                path: '/parcel-form',
+                path: '/parcel-form/:id',
                 element: <ParcelForm />
             },
             {
-                path:'/register',
-                element:<Register/>
+                path: '/register',
+                element: <Register />
             },
             {
-                path:"/login",
-                element:<Login/>
+                path: "/login",
+                element: <Login />
+            }, {
+                path: "*",
+                element: <NotFound />
+
             }
 
+        ],
+
+    },
+    {
+        path: '/dashboard',
+        element: <Dashboard />,
+        children: [
+            {
+                path: 'userDashboard/:id',
+                element: <UserDashboard />
+            },
+            {
+                path: "receiverDashboard/:id",
+                element: <ReceiverDashboard />
+            }, {
+                path: "adminDashboard",
+                element: <AdminDashboard />
+            },
+            {
+                path: "create-admin",
+                element: <CreateAdmin />
+            },
+            {
+                path: "*",
+                element: <NotFound />
+
+            }
         ]
     }
 ])

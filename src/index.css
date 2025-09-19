@@ -9,12 +9,11 @@
 --primary-color:#FF3F39;
 --font:"Poppins", sans-serif;
 }
-.border {
-    border-bottom: white;
-    opacity: 50%;
-    border: 0.5px;
-}
+.active{
+  font-style: bold;
+  color: red
 
+}
 
 input:-webkit-autofill,
 input:-webkit-autofill:focus,

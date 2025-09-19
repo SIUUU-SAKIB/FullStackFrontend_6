@@ -2,9 +2,10 @@ import { useState } from 'react'
 import Navbar from '../component/Navbar'
 import { IoEye } from 'react-icons/io5'
 import { IoMdEyeOff } from 'react-icons/io'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useMeQuery, useRegisterMutation } from '../redux/slices/authApi'
 import RegLoader from '../utils/RegLoader'
+import Swal from 'sweetalert2'
 
 const Register = () => {
     const [eye, setEye] = useState<boolean>(false)
@@ -15,41 +16,45 @@ const Register = () => {
     const [conPass, setConPass] = useState<string>('')
     const [alert, setAlert] = useState<boolean>(false)
     const [role, setRole] = useState<string>('')
-    const [register, { isLoading}] = useRegisterMutation()
-    const {data} = useMeQuery(undefined)
-    if(data === undefined) {
-        console.log('loggout successful')
-    }
-    console.log(data)
+    const [register, { isLoading }] = useRegisterMutation()
+    const navigate = useNavigate()
+    const { refetch } = useMeQuery(undefined)
+
+
     if (isLoading) {
         return <RegLoader />
     }
     const submitRegister = async (e: React.FormEvent) => {
-        e.preventDefault()
+        e.preventDefault();
         if (password !== conPass) {
-            setAlert(true)
-            return
+            setAlert(true);
+            return;
         } else {
             try {
-                const res = await register({
+                await register({
                     name,
                     email,
                     password,
-                    role
-                }).unwrap()
-                console.log('success 😍😍😍', res)
-                console.log(res.message, res.statusCode)
-     
-            } catch (error) {
-                console.log("Register failed", error)
-            }
-            setName('')
-            setEmail('')
-            setPassword('')
-            setConPass('')
-        }
+                    role,
+                }).unwrap();
 
-    }
+                refetch();
+                navigate('/login')
+            } catch (error: any) {
+                console.log("Registration failed");
+                if (error.data.message === 'User already exist') {
+                    Swal.fire("ooops! User already Exist");
+                    return
+
+                }
+
+            }
+            setName('');
+            setEmail('');
+            setPassword('');
+            setConPass('');
+        }
+    };
     return (
         <div className='min-w-screen'>
             <div className='bg-[url("https://cdn.prod.website-files.com/672544f2398bd9ac165adaa2/673a237aaab857de30d1cb01_trucks-highway-mountain-sunset%20Large.jpeg")] h-[500px] bg-cover bg-center'>
@@ -92,6 +97,8 @@ const Register = () => {
                                 type={eye ? 'text' : 'password'}
                                 placeholder="Password"
                                 required
+                                pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
+                                title="Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character (e.g., @, $, !, %, *, ?, &)."
                                 className="
     py-4 px-4 text-lg text-black/70 font-medium
     focus:outline-none focus:ring-0 border-none focus:rounded-lg
