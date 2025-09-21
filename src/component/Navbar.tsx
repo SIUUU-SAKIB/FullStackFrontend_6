@@ -33,12 +33,12 @@ const Navbar: React.FC = () => {
   const navigate = useNavigate();
   const [popUp, setPopup] = useState<boolean>(false);
   const [logout, { isLoading, isError }] = useLogoutMutation();
-  
+
 
   const { data, refetch } = useMeQuery(undefined);
-  
+
   const [modal, setModal] = useState(false);
-  const { setUserId, userId } = useContext(contextApi) || {}; 
+  const { setUserId, userId } = useContext(contextApi) || {};
   const userIdStr = userId ?? '';
 
   useEffect(() => {
@@ -58,16 +58,12 @@ const Navbar: React.FC = () => {
   }
 
   const getDashboardLink = () => {
-    const { role } = data?.currentUser.user || data?.currentUser || {};
+    const { role } = data?.currentUser?.user || data?.currentUser || {};
 
-    if (role === 'sender') {
-      return `/dashboard/userDashboard/${userIdStr}`;
-    } else if (role === 'receiver') {
-      return `/dashboard/receiverDashboard/${userIdStr}`;
-    } else if (role === 'admin' || role === 'super_admin') {
+    if (role === 'admin' || role === 'super_admin') {
       return `/dashboard/adminDashboard`;
     } else {
-      return '/dashboard';
+      return `/dashboard/userDashboard/${userIdStr}`
     }
   };
 
@@ -84,6 +80,9 @@ const Navbar: React.FC = () => {
         try {
           await logout({});
           refetch();
+          document.cookie = "accessToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
+          console.log("token removed")
+          document.cookie = "refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
           setModal(false);
           navigate('/');
           window.location.reload();
@@ -153,7 +152,7 @@ const Navbar: React.FC = () => {
           </div>
         </ul>
         <Link className="hidden lg:block" to={getDashboardLink()}>
-          <button className="px-12 py-4 bg-[var(--primary-color)] text-center text-white font-regular text-xl hover:bg-red-500 cursor-pointer transition duration-75 mt-4 mr-8 mb-8">
+          <button disabled={data === undefined} className="px-12 py-4 bg-[var(--primary-color)] text-center text-white font-regular text-xl hover:bg-red-500 cursor-pointer transition duration-75 mt-4 mr-8 mb-8">
             Dashboard
           </button>
         </Link>
@@ -180,8 +179,7 @@ const NavPopud: React.FC<NavPopudProps> = ({ setPopup, popUp, userId, data }) =>
           <Link to={'/login'}>Login</Link>
         </div>
       </ul>
-      <Link className="px-12 py-4 bg-[var(--primary-color)] w-[90%] text-center mx-auto text-white font-regular text-xl hover:bg-red-500 cursor-pointer transition duration-75 mt-4" to={data?.currentUser?.role === 'sender' ? `/dashboard/userDashboard/${userId}` : `/dashboard/receiverDashboard/${userId}`}>
-        <button >Dashboard</button></Link>
+   
     </div>
   );
 };

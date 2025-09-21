@@ -14,6 +14,7 @@ import ParcelCard from "../component/ParcelCard";
 import { useGetParcelsQuery } from "../redux/slices/parcelApi";
 
 
+
 type ParcelStatus = "pending" | "approved" | "rejected" | "in_transit" | "delivered";
 
 interface ParcelCardParcel {
@@ -31,7 +32,7 @@ interface ParcelCardParcel {
     address: string;
   };
   trackingNumber: string;
-  currentStatus: ParcelStatus;  
+  currentStatus: ParcelStatus;
   createdAt: string;
   updatedAt: string;
   contentDescription: string;
@@ -69,27 +70,28 @@ const AdminDashboard: React.FC = () => {
   const [block] = useBlockUserMutation();
   const [unblock] = useUnblockUserMutation();
   const { data: meData } = useMeQuery(undefined);
-  
+
   const [userPage, setUSerPage] = useState<number>(1);
   const { data: userResponse, refetch, isLoading: userLoading } = useAlluserQuery(userPage);
-  
+
   const userData = userResponse as UserResponse;
   const usersList = userData?.data || [];
 
   const [parcelPage, setParcelPage] = useState<number>(1);
-  
+
   const { data: parcelResponse, refetch: parcelRefetch, isLoading: parcelLoading } = useGetParcelsQuery(parcelPage);
-  
+
   const parcelData = parcelResponse as ParcelResponse;
   const parcelsList = parcelData?.data || [];
 
   const totalParcel = parcelData?.total || 0;
   const parcelPerPage = 4;
   const totalParcelPage = Math.ceil(totalParcel / parcelPerPage);
-  
+  const [searchUser, setSearchUser] = useState('')
   const [admins, setAdmins] = useState(false);
   const [parcel, setParcel] = useState(false);
   const { data: allAdmins, isLoading: adminLoading } = useAllAdminsQuery(undefined);
+  const { data: getAlUSer } = useAlluserQuery()
 
   useEffect(() => {
     refetch();
@@ -116,11 +118,20 @@ const AdminDashboard: React.FC = () => {
     return <RegLoader />;
   }
 
-  const filteredUsers = usersList.filter((e) => {
-    if (sort === "Sender") return e.role === "sender";
-    if (sort === "Receiver") return e.role === "receiver";
+  const filteredUsers = usersList.filter((user) => {
+    if (searchUser.length > 0) {
+      return user.name.toLowerCase().includes(searchUser.toLowerCase()) ||
+        user.email.toLowerCase().includes(searchUser.toLowerCase())
+    }
     return true;
   });
+ const searchedUser =  getAlUSer?.data?.filter((user) => {
+    if (searchUser.length > 0) {
+      console.log
+        (user.name.toLowerCase().includes(searchUser.toLowerCase()) ||
+          user.email.toLowerCase().includes(searchUser.toLowerCase()))
+    }
+  })
 
   if (isLoading || load) {
     return <RegLoader />;
@@ -293,16 +304,12 @@ const AdminDashboard: React.FC = () => {
         <div
           className={`w-full min-h-screen bg-green-50 px-4 py-6 ${users ? "flex flex-col gap-6" : "hidden"}`}
         >
-          <div className="flex items-center gap-4 max-w-lg mx-auto">
-            <select
-              onChange={(e) => setSort(e.target.value)}
-              className="mx-auto bg-zinc-100 px-4 py-2 rounded-sm cursor-pointer"
-            >
-              <option>Sort by</option>
-              <option value={"All"}>All</option>
-              <option value={"Sender"}>Sender</option>
-              <option value={"Receiver"}>Receiver</option>
-            </select>
+          <div className="max-w-xl mx-auto">
+            <div className="flex items-center gap-2 bg-zinc-100 rounded-sm p-2">
+              <input onChange={(e) => setSearchUser(e.target.value)} className="w-[150px] outline-none border-none px-2 py-1" placeholder="Search User" />
+
+
+            </div>
           </div>
 
           {filteredUsers.map((e: User) => (
@@ -315,16 +322,7 @@ const AdminDashboard: React.FC = () => {
                 <p className="text-sm text-gray-500 break-words">{e.email}</p>
               </div>
 
-              <div>
-                <span
-                  className={`px-3 py-1 text-sm font-medium rounded-full ${e.role === "sender"
-                    ? "bg-blue-100 text-blue-700"
-                    : "bg-purple-100 text-purple-700"
-                    }`}
-                >
-                  {e.role}
-                </span>
-              </div>
+
 
               <div className="flex gap-2">
                 <button
@@ -383,17 +381,39 @@ const AdminDashboard: React.FC = () => {
         </div>
 
         {/* Parcels */}
-        <div
-          className={`w-full grid grid-cols-1 md:grid-cols-2 gap-4 py-2 bg-blue-500/50 px-4 ${parcel ? "grid" : "hidden"}`}
-        >
-          {parcelsList.map((parcel: ParcelCardParcel) => (
-            <ParcelCard
-              key={parcel._id}
-              parcel={parcel}
-              parcelRefetch={parcelRefetch}
-            />
-          ))}
+        <div className="w-full ">
+          <div
+            className={`w-full grid grid-cols-1 md:grid-cols-2 gap-4 py-2 bg-blue-500/50 px-4 ${parcel ? "grid" : "hidden"}`}
+          >
+            {parcelsList.map((parcel: ParcelCardParcel) => (
+              <ParcelCard
+                key={parcel._id}
+                parcel={parcel}
+                parcelRefetch={parcelRefetch}
+              />
+            ))}
+          </div>
+          {/* parcel pagination */}
+          <div className={`${users ? "hidden" : "flex"} w-full items-center justify-center gap-4 pt-2`}>
+            <button
+              disabled={parcelPage === 1}
+              onClick={preveParcelBtn}
+              className="text-lg font-semibold  px-4 py-1 bg-amber-200 cursor-pointer hover:bg-amber-300 transition duration-100"
+            >
+              Prev
+            </button>
+            <p className="text-lg font-bold">{parcelPage}</p>
+            <button
+              disabled={parcelPage === totalParcelPage}
+              onClick={nextParcelBtn}
+              className="text-lg font-semibold  px-4 py-1 bg-amber-200 cursor-pointer hover:bg-amber-300 transition duration-100"
+            >
+              Next
+            </button>
+          </div>
+          {/* pagination */}
         </div>
+
       </div>
     </div>
   );

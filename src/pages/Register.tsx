@@ -76,7 +76,7 @@ const Register = () => {
                         <input onChange={(e) => setEmail(e.target.value)} value={email} type='email' placeholder='Email*' required className='border-none bg-zinc-100 p-4 text-lg text-black/70 font-medium 
              focus:outline-none  focus:rounded-lg'/>
                         {/* role */}
-                        <select
+                        {/* <select
                             id="role"
                             value={role}
                             onChange={(e) => setRole(e.target.value)}
@@ -87,7 +87,7 @@ const Register = () => {
                             <option className='border-none' value="">Choose you role</option>
                             <option value="sender">sender</option>
                             <option value="receiver">receiver</option>
-                        </select>
+                        </select> */}
                         {/* role === */}
 
                         <div className='flex bg-zinc-100 items-center justify-between w-full'>

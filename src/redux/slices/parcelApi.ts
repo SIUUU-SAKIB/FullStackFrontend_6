@@ -9,7 +9,9 @@ export const parcelApi = createApi({
         getParcels: builder.query({
             query: (page) => `parcel/all-parcel?page=${page}&limit=4`,
         }),
-
+        getAlParcels: builder.query({
+            query: () => 'parcel/all-parcel',
+        }),
         createParcel: builder.mutation({
             query: (parcel) => ({
                 url: 'parcel/create-parcel',
@@ -52,4 +54,4 @@ export const parcelApi = createApi({
 });
 
 
-export const { useGetParcelsQuery, useCreateParcelMutation, useGetParcelByUserQuery, useCancelParcelMutation, useGetReceiverParcelQuery, useApproveParcelMutation, useDeleteParcelMutation } = parcelApi;
+export const { useGetParcelsQuery, useCreateParcelMutation, useGetParcelByUserQuery, useCancelParcelMutation, useGetReceiverParcelQuery, useApproveParcelMutation, useDeleteParcelMutation, useGetAlParcelsQuery } = parcelApi;

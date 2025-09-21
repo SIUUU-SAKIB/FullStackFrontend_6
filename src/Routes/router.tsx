@@ -9,7 +9,6 @@ import Register from "../pages/Register";
 import Login from "../pages/Login";
 import UserDashboard from "../AllDashboard/UserDashboard";
 import Dashboard from "../AllDashboard/Dashboard";
-import ReceiverDashboard from "../AllDashboard/ReceiverDashboard";
 import AdminDashboard from "../AllDashboard/AdminDashboard";
 import NotFound from "../component/NotFound";
 import CreateAdmin from "../component/CreateAdmin";
@@ -58,9 +57,6 @@ const router = createBrowserRouter([
                 element: <UserDashboard />
             },
             {
-                path: "receiverDashboard/:id",
-                element: <ReceiverDashboard />
-            }, {
                 path: "adminDashboard",
                 element: <AdminDashboard />
             },
