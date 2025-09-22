@@ -35,6 +35,7 @@ const UserDashboard = () => {
 
 useEffect(() => {
   meRefetch();
+  receiverRefetch()
   parcelRefetch();
   const parcelFiltered = parcelData?.data?.[0]?.filter((e) => e.trackingNumber === trcNum) || [];
   const receiverFiltered = receiverData?.data?.filter((e) => e.trackingNumber === trcNum) || [];

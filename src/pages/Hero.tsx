@@ -11,6 +11,7 @@ interface HeroProps {
 const Hero: React.FC<HeroProps> = ({ onScrollClick }) => {
   const { userId } = useContext(contextApi) || {}
   const { data } = useMeQuery(undefined)
+  console.log(data)
   return (
     <div className="relative h-screen w-full overflow-hidden">
       {/* Video background */}
@@ -32,13 +33,10 @@ const Hero: React.FC<HeroProps> = ({ onScrollClick }) => {
         </p>
         <div className='mt-4 flex items-center justify-center gap-2 lg:gap-8 flex-col lg:flex-row'>
           <div className='flex gap-4'>
-            {
-              data?.currentUser?.role === "sender" || data?.currentUser?.user?.role === "sender" ? (
-                <Link to={`/parcel-form/${userId}`} onClick={onScrollClick} className='px-21 py-4 bg-[var(--primary-color)]  text-center text-white font-regular text-xl hover:bg-red-600 cursor-pointer transition duration-75 font-bold italic'>Send parcel</Link>
-              ) : (
-                <Link to={`/service-page`} onClick={onScrollClick} className='px-20 py-4 bg-[var(--primary-color)]  text-center text-white font-regular text-xl hover:bg-red-600 cursor-pointer transition duration-75 font-bold italic'>Our Services</Link>
-              )
-            }
+
+            <Link to={`/parcel-form/${userId}`} onClick={onScrollClick} className='px-21 py-4 bg-[var(--primary-color)]  text-center text-white font-regular text-xl hover:bg-red-600 cursor-pointer transition duration-75 font-bold italic'>Send parcel</Link>
+
+
           </div>
 
           <Link to={"/about"} className='px-12 py-4 bg-transparent border-1 border-[var(--primary-color)]  text-center text-white font-regular text-xl hover:bg-red-600 cursor-pointer transition duration-75 '>What sets up apart?</Link>

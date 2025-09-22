@@ -35,9 +35,7 @@ const Register = () => {
                     name,
                     email,
                     password,
-                    role,
                 }).unwrap();
-
                 refetch();
                 navigate('/login')
             } catch (error: any) {
