@@ -3,7 +3,7 @@ import logo from '../assets/updated_logo.png';
 import { Link, useParams } from 'react-router-dom';
 import { useMeQuery } from '../redux/slices/authApi';
 import { CgProfile } from 'react-icons/cg';
-import {  MdOutlinePendingActions } from 'react-icons/md';
+import { MdOutlinePendingActions } from 'react-icons/md';
 import { useGetParcelByUserQuery, useGetReceiverParcelQuery } from '../redux/slices/parcelApi';
 import RegLoader from '../utils/RegLoader';
 import { CiSearch } from 'react-icons/ci';
@@ -12,7 +12,8 @@ import { contextApi } from '../ContextProvider';
 import { FaRegWindowClose } from 'react-icons/fa';
 import { FaArrowRightLong } from "react-icons/fa6";
 
-const UserDashboard = () => {
+
+const UserDashboard= () => {
 
   const { id: userId } = useParams();
   const { data: meData, refetch: meRefetch } = useMeQuery(undefined);
@@ -33,21 +34,21 @@ const UserDashboard = () => {
   const [trParcel, setTrParcel] = useState([]);
   const [all, setAll] = useState(false);
 
-useEffect(() => {
-  meRefetch();
-  receiverRefetch()
-  parcelRefetch();
-  const parcelFiltered = parcelData?.data?.[0]?.filter((e) => e.trackingNumber === trcNum) || [];
-  const receiverFiltered = receiverData?.data?.filter((e) => e.trackingNumber === trcNum) || [];
+  useEffect(() => {
+    meRefetch();
+    receiverRefetch()
+    parcelRefetch();
+    const parcelFiltered = parcelData?.data?.[0]?.filter((e) => e.trackingNumber === trcNum) || [];
+    const receiverFiltered = receiverData?.data?.filter((e) => e.trackingNumber === trcNum) || [];
 
-  const filtered = [...parcelFiltered, ...receiverFiltered];
+    const filtered = [...parcelFiltered, ...receiverFiltered];
 
-  setTrParcel(filtered);
+    setTrParcel(filtered);
 
-}, [trcNum]);
+  }, [trcNum]);
 
 
-console.log(trParcel)
+  console.log(trParcel)
   if (parcelLoading) {
     return <RegLoader />;
   }
@@ -73,9 +74,13 @@ console.log(trParcel)
 
   return (
     <div className="bg-[url('https://wallpapers.com/images/featured/cool-trucks-cdvn4ttk7o8geggz.jpg')] min-h-screen max-w-screen bg-center bg-cover bg-no-repeat relative">
-      {(meData?.currentUser?.blocked === true || meData?.currentUser?.user?.blocked === true || meData?.currentUser?.isVerified === false || meData?.currentUser?.user?.isVerified === false) && (
-        <div className="absolute top-0 left-0 w-full h-full bg-red-200/90 z-100 grid place-content-center">
-          <p className="text-white font-extrabold z-200 text-6xl">OOPS YOU'RE BLOCKED OR NOT VERIFIED😔</p>
+      {(meData?.currentUser?.blocked || !meData?.currentUser?.isVerified) && (
+        <div className="absolute top-0 left-0 w-full h-full bg-red-500/95 z-100 grid place-content-center backdrop-blur-sm">
+          <p className="text-white font-extrabold z-200 text-6xl text-center">{meData?.currentUser?.blocked ? "Your account has been blocked"
+            : "Your account is not verified yet"}</p>
+          <p className='text-white font-semibold text-xl text-shadow-2xs text-center  py-4'>{!meData?.currentUser?.blocked ? "Please wait for an admin to review your account"
+            : "Please wait for admin to unblock you"}</p>
+          <Link className='text-xl text-center' to={'/'}>Return to home</Link>
         </div>
       )}
       <div className="overlay h-full w-full left-0 top-0 absolute bg-black/50"></div>

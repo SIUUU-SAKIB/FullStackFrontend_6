@@ -8,26 +8,16 @@ import logo from '../assets/updated_logo.png';
 import { IoCloseOutline } from 'react-icons/io5';
 import { RxCross1 } from 'react-icons/rx';
 import RegLoader from '../utils/RegLoader';
+import type { IUser } from '../interfaces/user';
 
-// Define types for MeData and CurrentUser
-interface CurrentUser {
-  _id: string;
-  name: string;
-  email: string;
-  role: string;
-  isVerified: boolean;
-}
 
-interface MeData {
-  currentUser: CurrentUser;
-}
 
-interface NavPopudProps {
-  setPopup: (value: boolean) => void;
-  popUp: boolean;
-  userId: string;
-  data: MeData | undefined; // Allow data to be undefined while loading
-}
+// interface NavPopudProps {
+//   setPopup: (value: boolean) => void;
+//   popUp: boolean;
+//   userId: string;
+//   data: string
+// }
 
 const Navbar: React.FC = () => {
   const navigate = useNavigate();
@@ -40,7 +30,6 @@ const Navbar: React.FC = () => {
   const [modal, setModal] = useState(false);
   const { setUserId, userId } = useContext(contextApi) || {};
   const userIdStr = userId ?? '';
-
   useEffect(() => {
     if (data?.currentUser?._id && setUserId) {
       setUserId(data.currentUser._id);
@@ -56,7 +45,7 @@ const Navbar: React.FC = () => {
   if (isError) {
     console.log('Something went wrong');
   }
-
+  console.log(data?.currentUser?.role)
   const getDashboardLink = () => {
     const { role } = data?.currentUser?.user || data?.currentUser || {};
 
@@ -98,7 +87,9 @@ const Navbar: React.FC = () => {
   };
 
   return (
-    <div className="max-w-screen flex flex-col items-start justify-center relative">
+    <div className='overflow-visible'>
+      <div className="sticky top-0 z-50 w-full flex flex-col items-center justify-center">
+
       <div className="flex gap-2 flex-col py-4 items-center justify-center w-full font-regular bg-[var(--primary-color)] lg:bg-transparent text-lg text-white lg:text-[16px] lg:pl-28 lg:flex-row lg:justify-start lg:px-8 border-b-[0.2px] border-white/20 ">
         <p>Call Us: 01796-0000000</p>
         <p>Email Us: metropf@metroparcelserivce.com</p>
@@ -111,24 +102,25 @@ const Navbar: React.FC = () => {
 
         <div className="lg:hidden">
           <FiAlignRight onClick={() => { setPopup(true); }} className="text-2xl text-white mr-4 cursor-pointer" />
-          <NavPopud data={data} userId={userIdStr} setPopup={setPopup} popUp={popUp} />
+          <NavPopud data={data} userId={userIdStr} getDashboardLink={getDashboardLink} setPopup={setPopup} popUp={popUp} logOutBtn={logOutBtn} />
         </div>
 
         <ul className="hidden lg:flex items-center gap-8 text-white font-semibold text-lg mb-8">
           <Link to={'/'}><li className="cursor-pointer active:">Home</li></Link>
           <Link to={'/service-page'}><li className="cursor-pointer">Services</li></Link>
           <Link to={'/about'}><li className="cursor-pointer">About</li></Link>
+          <Link to={'/contact'}><li className="cursor-pointer">Contact</li></Link>
           <div>
             {data?.currentUser ? (
-              <div className="flex gap-2 items-center cursor-pointer relative z-100">
+              <div className="flex gap-2 items-center cursor-pointer relative">
                 <img onClick={() => setModal(modal => modal === true ? false : true)} src="https://img.freepik.com/premium-vector/user-icon-icon_1076610-59410.jpg?w=200" className="w-[40px] rounded-full border-white" />
 
-                <div className={`absolute top-12 right-4 bg-gradient-to-r from-cyan-500 to-blue-500 p-4 w-[250px] rounded-lg shadow-lg ${modal ? "block" : "hidden"} transition duration-300`}>
+                <div className={`absolute top-12 right-4 bg-gradient-to-r from-cyan-500 to-blue-500 p-4 w-[250px] rounded-lg shadow-lg ${modal ? "block" : "hidden"} transition duration-300 z-100`}>
                   <p className="font-semibold text-white">
-                    {data?.currentUser?.name || data?.currentUser?.user?.name}
+                    {data?.currentUser?.name}
                   </p>
                   <p className="font-semibold text-white">
-                    {data.currentUser?.email || data.currentUser?.user?.email}
+                    {data.currentUser?.email}
                   </p>
                   <div className="flex gap-2 items-center text-white">
                     Verified
@@ -138,7 +130,7 @@ const Navbar: React.FC = () => {
                       <FiCheck className="text-white font-bold bg-green-400 text-xl rounded-full p-1" />
                     )}
                   </div>
-                  <Link to={`/dashboard/userDashboard/${userIdStr}`}><p className="cursor-pointer">Dashboard</p></Link>
+                  <p>{data?.currentUser?.role?.slice(0, 1).toUpperCase() + data?.currentUser?.role?.slice(1)}</p>
                   <p onClick={logOutBtn} className="cursor-pointer">Logout</p>
                   <div className="absolute h-[5px] w-[100%] bg-red-500 top-0 right-0 rounded-t-lg"></div>
                 </div>
@@ -158,10 +150,12 @@ const Navbar: React.FC = () => {
         </Link>
       </div>
     </div>
+    </div>
   );
 };
 
-const NavPopud: React.FC<NavPopudProps> = ({ setPopup, popUp, userId, data }) => {
+const NavPopud = ({ setPopup, popUp, userId, data, getDashboardLink, logOutBtn }) => {
+
   return (
     <div className={`absolute top-24 ${popUp === true ? "right-0" : "-right-300"} bg-white flex flex-col gap-4 py-4 transition-all duration-400 min-w-screen md:min-w-1/2 ease-in-out min-h-screen z-100`}>
       <div className="flex justify-between items-center -mt-2">
@@ -174,12 +168,22 @@ const NavPopud: React.FC<NavPopudProps> = ({ setPopup, popUp, userId, data }) =>
         <Link to={'/'}><li className="cursor-pointer">Home</li></Link>
         <Link to={'/service-page'}><li className="cursor-pointer">Services</li></Link>
         <Link to={'/about'}><li className="cursor-pointer">About</li></Link>
-        <div className="flex flex-col gap-4">
-          <Link to={'/register'}>SignUp</Link>
-          <Link to={'/login'}>Login</Link>
-        </div>
+         <Link to={'/contact'}><li className="cursor-pointer">Contact</li></Link>
+        {
+          data?.currentUser ? (<div className='flex flex-col gap-4 w-full'>
+            <p onClick={logOutBtn} className="cursor-pointer text-red-600">Logout</p>
+            <Link className='w-full' to={getDashboardLink()}>
+            <button disabled={data === undefined} className="px-12 py-4 bg-[var(--primary-color)] text-center text-white font-regular text-xl hover:bg-red-500 cursor-pointer transition duration-75 mt-4 mr-8 mb-8 w-full">
+              Dashboard
+            </button>
+          </Link>
+          </div>) : (<div className="flex flex-col gap-4">
+            <Link to={'/register'}>SignUp</Link>
+            <Link to={'/login'}>Login</Link>
+          </div>)
+        }
       </ul>
-   
+
     </div>
   );
 };

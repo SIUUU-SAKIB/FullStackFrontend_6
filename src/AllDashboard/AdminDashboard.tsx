@@ -52,7 +52,6 @@ interface User {
   blocked?: boolean;
 }
 
-// Use the compatible type for the API response
 interface ParcelResponse {
   total: number;
   data: ParcelCardParcel[];
@@ -91,7 +90,7 @@ const AdminDashboard: React.FC = () => {
   const [admins, setAdmins] = useState(false);
   const [parcel, setParcel] = useState(false);
   const { data: allAdmins, isLoading: adminLoading } = useAllAdminsQuery(undefined);
-  const { data: getAlUSer } = useAlluserQuery()
+  const { data: getAlUSer } = useAlluserQuery(undefined)
 
   useEffect(() => {
     refetch();
@@ -319,7 +318,7 @@ const AdminDashboard: React.FC = () => {
             >
               <div className="flex flex-col items-center md:items-start text-center md:text-left">
                 <p className="text-lg font-semibold text-gray-800">{e.name}</p>
-                <p className="text-sm text-gray-500 break-words">{e.email}</p>
+                <p className="text-sm text-gray-500 px-2 py-1 bg-green-200 rounded-full break-words">{e.role}</p>
               </div>
 
 

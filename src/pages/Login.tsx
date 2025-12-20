@@ -96,7 +96,7 @@ const Login = () => {
             <button type='submit' className='text-lg bg-red-500/70 py-4 cursor-pointer text-white font-semibold'>Submit</button>
           </div>
 
-          <p className='text-md font-medium'>Not registered yet? <Link to={'/register'}>Register</Link></p>
+          <p className='text-md font-medium'>Not registered yet? <Link className='font-semibold underline' to={'/register'}>Register</Link></p>
         </form>
       </div>
 

@@ -18,7 +18,7 @@ export const baseQueryWithReauth: BaseQueryFn<
   if (result.error && result.error.status === 401) {
     console.log('401 error received, attempting to refresh token...');
 
-    const refreshResult = await rawBaseQuery("auth/refresh", api, extraOptions);
+    const refreshResult = await rawBaseQuery("/auth/refresh", api, extraOptions);
 
     if (refreshResult.data) {
 

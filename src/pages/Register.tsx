@@ -74,7 +74,7 @@ const Register = () => {
                         <input onChange={(e) => setEmail(e.target.value)} value={email} type='email' placeholder='Email*' required className='border-none bg-zinc-100 p-4 text-lg text-black/70 font-medium 
              focus:outline-none  focus:rounded-lg'/>
                         {/* role */}
-                        {/* <select
+                        <select
                             id="role"
                             value={role}
                             onChange={(e) => setRole(e.target.value)}
@@ -85,7 +85,7 @@ const Register = () => {
                             <option className='border-none' value="">Choose you role</option>
                             <option value="sender">sender</option>
                             <option value="receiver">receiver</option>
-                        </select> */}
+                        </select>
                         {/* role === */}
 
                         <div className='flex bg-zinc-100 items-center justify-between w-full'>
@@ -126,7 +126,7 @@ const Register = () => {
                         <button type='submit' className='text-lg bg-red-500/70 py-4 cursor-pointer text-white font-semibold'>Submit</button>
                     </div>
 
-                    <p className='text-md font-medium'>Already a member? <Link to={'/login'}>Login</Link></p>
+                    <p className='text-md font-medium'>Already a member? <Link className='font-semibold underline' to={'/login'}>Login</Link></p>
                 </form>
             </div>
 

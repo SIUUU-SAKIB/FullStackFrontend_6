@@ -7,6 +7,7 @@ import 'toastify-js/src/toastify.css';
 import { contextApi } from '../../ContextProvider';
 import Swal from 'sweetalert2';
 import { useMeQuery } from '../../redux/slices/authApi';
+import { Link } from 'react-router-dom';
 interface ErrorData {
   message?: string;
 }
@@ -22,6 +23,8 @@ const showToast = () => {
 }
 
 const ParcelForm: React.FC = () => {
+  const [createParcel, { isLoading }] = useCreateParcelMutation();
+  const { data: meData, refetch: meRefetch } = useMeQuery(undefined);
   const { userId } = useContext(contextApi) ?? {};
   const [senderName, setSenderName] = useState<string>('');
   const [senderEmail, setSenderEmail] = useState<string>('');
@@ -35,88 +38,97 @@ const ParcelForm: React.FC = () => {
   const [fragile, setFragile] = useState<string>('Fragile?');
   const [weight, setWeight] = useState<string>('');
 
-  const [createParcel, { isLoading }] = useCreateParcelMutation();
-  const { data: meData, refetch: meRefetch } = useMeQuery(undefined);
-console.log(meData?.currentUser._id)
+
+console.log(meData.currentUser.email)
   useEffect(() => {
     meRefetch();
   }, [meRefetch]);
-
+useEffect(() => {
+setSenderName(meData?.currentUser?.name)
+setSenderEmail(meData?.currentUser?.email)
+},[])
   if (isLoading) {
     return <RegLoader />;
   }
 
-const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-  const parcel = {
-    userId,
-    receiverEmail,
-    sender: {
-      name: senderName,
-      phone: senderPhone,
-      email: senderEmail,
-      address: senderAddress,
-    },
-    receiver: {
-      name: receiverName,
-      phone: receiverPhone,
-      email: receiverEmail,
-      address: receiverAddress,
-    },
-    weight: weight + "KG",
-    contentDescription: description,
-    fragile: fragile === "yes" ? true : false,
-  };
+    const parcel = {
+      userId,
+      receiverEmail,
+      sender: {
+        name: senderName,
+        phone: senderPhone,
+        email: senderEmail,
+        address: senderAddress,
+      },
+      receiver: {
+        name: receiverName,
+        phone: receiverPhone,
+        email: receiverEmail,
+        address: receiverAddress,
+      },
+      weight: weight + "KG",
+      contentDescription: description,
+      fragile: fragile === "yes" ? true : false,
+    };
 
-  try {
-    const res = await createParcel(parcel);
+    try {
+      const res = await createParcel(parcel);
 
-    if (res?.error) {
-      if ('data' in res.error) {
-        const errorData = res.error.data as ErrorData;
-        if (errorData.message === 'Receiver does not exist on our database') {
-          Swal.fire("Oops! Wrong Receiver Email");
-          return;
+      if (res?.error) {
+        if ('data' in res.error) {
+          const errorData = res.error.data as ErrorData;
+          if (errorData.message === 'Receiver does not exist on our database') {
+            Swal.fire("Oops! Wrong Receiver Email");
+            return;
+          }
+
+          console.log('Error:', errorData.message);
+        } else {
+
+          console.error("SerializedError", res.error);
+          Swal.fire("Something went wrong!");
         }
-
-        console.log('Error:', errorData.message); 
       } else {
-
-        console.error("SerializedError", res.error);
-        Swal.fire("Something went wrong!");
+        showToast();
       }
-    } else {
-      showToast();
+    } catch (error: any) {
+      console.error("Something went wrong", error);
+      Swal.fire("Something went wrong!");
     }
-  } catch (error: any) {
-    console.error("Something went wrong", error);
-    Swal.fire("Something went wrong!");
-  }
 
-  // RESET FORM
-  setWeight('');
-  setFragile('');
-  setDescription('');
-  setReceiverAddress('');
-  setReceiverPhone('');
-  setReceiverName('');
-  setReceiverEmail('');
-  setSenderAddress('');
-  setSenderEmail('');
-  setSenderPhone('');
-  setSenderName('');
-};
-
+    // RESET FORM
+    setWeight('');
+    setFragile('');
+    setDescription('');
+    setReceiverAddress('');
+    setReceiverPhone('');
+    setReceiverName('');
+    setReceiverEmail('');
+    setSenderAddress('');
+    setSenderEmail('');
+    setSenderPhone('');
+    setSenderName('');
+  };
 
   return (
     <div className="min-w-screen relative">
-      {(meData?.currentUser?.blocked === true || meData?.currentUser?.user?.blocked === true || meData?.currentUser?.isVerified === false || meData?.currentUser?.user?.isVerified === false) && (
-        <div className="absolute top-0 left-0 w-full h-full bg-red-200/90 z-100 grid place-content-center">
-          <p className="text-white font-extrabold z-200 text-6xl">OOPS YOU'RE BLOCKED OR NOT VERIFIED😔</p>
+      {(meData?.currentUser?.blocked || !meData?.currentUser?.isVerified) && (
+        <div className="absolute top-0 left-0 w-full h-full bg-red-500/95 z-100 grid place-content-center backdrop-blur-sm">
+          <p className="text-white font-extrabold z-200 text-6xl text-center">{meData?.currentUser?.blocked ? "Your account has been blocked"
+            : "Your account is not verified yet"}</p>
+          <p className='text-white font-semibold text-xl text-shadow-2xs text-center  py-4'>{!meData?.currentUser?.blocked ? "Please wait for an admin to review your account"
+            : "Please wait for admin to unblock you"}</p>
+          <Link className='text-xl text-center' to={'/'}>Return to home</Link>
         </div>
       )}
-      
+      {
+        meData?.currentUser?.role !== "sender" && <div className="absolute top-0 left-0 w-full h-full bg-red-500/95 z-100 grid place-content-center backdrop-blur-sm"><p className='text-white font-extrabold text-6xl text-shadow-2xs text-center py-4'>Pleae register as a sender to send parcel</p>
+          <Link className='text-xl  text-center' to={'/'}>Return to home</Link></div>
+      }
+
       <div className="bg-[url('https://cdn.prod.website-files.com/672544f2398bd9ac165adaa2/673a237aaab857de30d1cb01_trucks-highway-mountain-sunset%20Large.jpeg')] h-[300px] bg-cover bg-center">
         <div className="absolute top-0 left-o h-[300px] w-full bg-black/60"></div>
         <Navbar />
@@ -124,11 +136,11 @@ const handleSubmit = async (e: React.FormEvent) => {
           <p className="text-5xl md:text-8xl text-white font-extrabold text-center z-10">Send Parcel</p>
         </div>
       </div>
-      
+
       {/* Form */}
       <form onSubmit={handleSubmit} className="max-w-screen-lg mx-auto py-16 flex flex-col gap-4 items-center justify-center bg-white shadow-lg px-4">
         <div className="grid grid-cols-1 md:grid-cols-2 w-full gap-4">
-          
+
           {/* Sender information */}
           <div className="gap-2 flex flex-col">
             <label className="text-2xl text-black/70 font-semibold text-center">Sender Information</label>

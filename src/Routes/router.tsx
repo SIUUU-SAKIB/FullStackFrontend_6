@@ -12,6 +12,7 @@ import Dashboard from "../AllDashboard/Dashboard";
 import AdminDashboard from "../AllDashboard/AdminDashboard";
 import NotFound from "../component/NotFound";
 import CreateAdmin from "../component/CreateAdmin";
+import Contact from "../pages/Contact";
 
 const router = createBrowserRouter([
     {
@@ -40,6 +41,9 @@ const router = createBrowserRouter([
                 path: "/login",
                 element: <Login />
             }, {
+                path: "/contact",
+                element: <Contact />
+            },{
                 path: "*",
                 element: <NotFound />
 
