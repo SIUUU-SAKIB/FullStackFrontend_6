@@ -23,7 +23,10 @@ export const parcelApi = createApi({
             query: (userId) =>
                 `parcel/getParcelByUser/${userId}`,
         }),
-
+         getParcelById: builder.query({
+            query: (parcelId) =>
+                `parcel/getParcelById/${parcelId}`,
+        }),
         getReceiverParcel: builder.query({
             query: (email) => ({
                 url: `parcel/get-receiver-parcel/${email}`,
@@ -38,7 +41,7 @@ export const parcelApi = createApi({
         }),
         approveParcel: builder.mutation({
             query: (payload) => ({
-                url: "parcel/approve-parcel",
+                url: "parcel/change-status",
                 method: 'PATCH',
                 body: payload
             })
@@ -54,4 +57,4 @@ export const parcelApi = createApi({
 });
 
 
-export const { useGetParcelsQuery, useCreateParcelMutation, useGetParcelByUserQuery, useCancelParcelMutation, useGetReceiverParcelQuery, useApproveParcelMutation, useDeleteParcelMutation, useGetAlParcelsQuery } = parcelApi;
+export const { useGetParcelsQuery, useCreateParcelMutation, useGetParcelByUserQuery, useCancelParcelMutation, useGetReceiverParcelQuery, useApproveParcelMutation, useDeleteParcelMutation, useGetAlParcelsQuery, useGetParcelByIdQuery } = parcelApi;

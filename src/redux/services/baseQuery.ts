@@ -16,22 +16,19 @@ export const baseQueryWithReauth: BaseQueryFn<
   let result = await rawBaseQuery(args, api, extraOptions);
 
   if (result.error && result.error.status === 401) {
-    console.log('401 error received, attempting to refresh token...');
+  const refreshResult = await rawBaseQuery(
+    { url: "/auth/refresh", method: "POST" },
+    api,
+    extraOptions
+  );
 
-    const refreshResult = await rawBaseQuery("/auth/refresh", api, extraOptions);
-
-    if (refreshResult.data) {
-
-      console.log('Token refresh successful, retrying original request...');
-
-      result = await rawBaseQuery(args, api, extraOptions);
-    } else {
-
-      console.log('Refresh failed, logging out...');
-
-      api.dispatch({ type: "auth/logout" });
-    }
+  if (refreshResult.data) {
+    result = await rawBaseQuery(args, api, extraOptions);
+  } else {
+    api.dispatch({ type: "auth/logout" });
   }
+}
+
 
   return result;
 };

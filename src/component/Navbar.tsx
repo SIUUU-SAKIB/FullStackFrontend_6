@@ -51,8 +51,10 @@ const Navbar: React.FC = () => {
 
     if (role === 'admin' || role === 'super_admin') {
       return `/dashboard/adminDashboard`;
-    } else {
+    } else if(role === "sender") {
       return `/dashboard/userDashboard/${userIdStr}`
+    }else{
+      return `/dashboard/receiverDashboard/${userIdStr}`
     }
   };
 
@@ -116,21 +118,21 @@ const Navbar: React.FC = () => {
                 <img onClick={() => setModal(modal => modal === true ? false : true)} src="https://img.freepik.com/premium-vector/user-icon-icon_1076610-59410.jpg?w=200" className="w-[40px] rounded-full border-white" />
 
                 <div className={`absolute top-12 right-4 bg-gradient-to-r from-cyan-500 to-blue-500 p-4 w-[250px] rounded-lg shadow-lg ${modal ? "block" : "hidden"} transition duration-300 z-100`}>
-                  <p className="font-semibold text-white">
+                  <p className="font-semibold text-white cursor-text">
                     {data?.currentUser?.name}
                   </p>
-                  <p className="font-semibold text-white">
+                  <p className="font-semibold text-white cursor-text">
                     {data.currentUser?.email}
                   </p>
-                  <div className="flex gap-2 items-center text-white">
+                  <div className="flex gap-2 items-center text-white cursor-text">
                     Verified
                     {data.currentUser?.isVerified === false || data.currentUser?.user?.isVerified === false ? (
-                      <RxCross1 className="text-white text-xl font-bold bg-red-400 rounded-full p-1" />
+                      <RxCross1 className="text-white text-xl font-bold bg-red-400 rounded-full p-1 cursor-text" />
                     ) : (
-                      <FiCheck className="text-white font-bold bg-green-400 text-xl rounded-full p-1" />
+                      <FiCheck className="text-white font-bold bg-green-400 text-xl rounded-full p-1 cursor-text" />
                     )}
                   </div>
-                  <p>{data?.currentUser?.role?.slice(0, 1).toUpperCase() + data?.currentUser?.role?.slice(1)}</p>
+                  <p className='cursor-text'>{data?.currentUser?.role?.slice(0, 1).toUpperCase() + data?.currentUser?.role?.slice(1)}</p>
                   <p onClick={logOutBtn} className="cursor-pointer">Logout</p>
                   <div className="absolute h-[5px] w-[100%] bg-red-500 top-0 right-0 rounded-t-lg"></div>
                 </div>

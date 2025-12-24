@@ -11,9 +11,10 @@ import Card from '../component/Card';
 import { contextApi } from '../ContextProvider';
 import { FaRegWindowClose } from 'react-icons/fa';
 import { FaArrowRightLong } from "react-icons/fa6";
+import Tracking from '../component/Tracking';
 
 
-const UserDashboard= () => {
+const SenderDashboard = () => {
 
   const { id: userId } = useParams();
   const { data: meData, refetch: meRefetch } = useMeQuery(undefined);
@@ -40,15 +41,10 @@ const UserDashboard= () => {
     parcelRefetch();
     const parcelFiltered = parcelData?.data?.[0]?.filter((e) => e.trackingNumber === trcNum) || [];
     const receiverFiltered = receiverData?.data?.filter((e) => e.trackingNumber === trcNum) || [];
-
     const filtered = [...parcelFiltered, ...receiverFiltered];
-
     setTrParcel(filtered);
-
   }, [trcNum]);
 
-
-  console.log(trParcel)
   if (parcelLoading) {
     return <RegLoader />;
   }
@@ -99,12 +95,6 @@ const UserDashboard= () => {
             <div className="flex gap-1 items-center">
               <MdOutlinePendingActions />
               <p className="font-light">
-                Incoming Parcels: <span className="text-red-500 font-bold">{receiverData?.data.length}</span>
-              </p>
-            </div>
-            <div className="flex gap-1 items-center">
-              <MdOutlinePendingActions />
-              <p className="font-light">
                 Your Parcels: <span className="text-red-500 font-bold">{parcelData?.data[0].length}</span>
               </p>
             </div>
@@ -115,36 +105,10 @@ const UserDashboard= () => {
         </div>
 
         <div className={`flex-col items-start py-8 ${trcNum.length > 0 ? 'hidden' : 'flex'}`}>
-          <div className="flex flex-col md:flex-row w-full items-center justify-center gap-2 md:gap-8 ">
-            <div
-              onClick={() => {
-                setSent(false)
-                setIncoming(true)
-                setAll(false)
-              }}
-              className="md:max-w-[400px] min-w-[200px] flex items-center justify-center px-4 py-2 cursor-pointer rounded-xl z-10 gap-1 bg-white/90 hover:bg-white transition duration-200"
-            >
-              <img
-                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQa8fp5rWKGjjrxB2RQATZs_4ozJkTLwQktRw&s"
-                className="w-[40px] rounded-full"
-              />
-              <p className="text-xl font-medium">Incoming </p>
-            </div>
-            <div
-              onClick={() => {
-                setIncoming(false)
-                setSent(true)
-                setAll(false)
-              }}
-              className="md:max-w-[400px] min-w-[200px] flex items-center justify-center px-4 py-2 cursor-pointer rounded-xl z-10 gap-1 bg-white/90 hover:bg-white transition duration-200"
-            >
-              <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR50Ic3NJ6UqVUwxUTQ7iWSbesJzmLoBksCCw&s" className="w-[40px] rounded-full" />
-              <p className="text-xl font-medium">Your parcels </p>
-            </div>
-          </div>
 
 
-          <div className='max-w-screen-lg mx-auto z-10 flex gap-8 items-center justify-center'>
+
+          <div className='max-w-screen-2xl mx-auto z-10 flex gap-8 items-center justify-center'>
             <div className=" mx-auto my-4 bg-white z-10 flex items-center justify-between px-4 rounded-sm py-1">
               <input
                 onChange={(e) => setTracking(e.target.value)}
@@ -177,8 +141,8 @@ const UserDashboard= () => {
             }
 
           </div>
-          <p className='text-center w-full z-10 text-white font-bold text-2xl border-b'>{`${sent ? "All Sent Parcels" : "Incoming Parcels"}`}</p>
-          <div className="grid grid-cols-1 md:grid-cols-2 place-items-center justify-items-center gap-4 py-2">
+          <p className='text-center w-full z-10 text-white font-bold text-2xl border-b'>{parcelData?.data[0]?.length === 0 ? "" :"All Parcels"}</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 place-items-center justify-items-center gap-4 py-2 w-full">
             <Card
               parcel={parcelData}
               sent={sent}
@@ -194,89 +158,13 @@ const UserDashboard= () => {
         </div>
 
         <div className={`max-w-screen-lg mx-auto bg-white py-24 z-10 ${trcNum.length > 0 ? 'block' : 'hidden'} relative`}>
-          <FaRegWindowClose
-            onClick={() => setTrcNum('')}
-            className="absolute top-4 right-4 text-4xl text-red-500 cursor-pointer"
-          />
-          <div className="max-w-screen-md mx-auto h-[100px] bg-white flex flex-col gap-2 items-center px-4">
-            <p className="text-center font-bold text-3xl text-black/80">Tracking: {trcNum}</p>
-            <p className="text-shadow-zinc-700">Expected Delivery Date: {trParcel[0]?.expectedDeliveryDate}</p>
-          </div>
+          <Tracking />
+          
 
-          <div className="flex relative gap-12 items-center px-4">
-            <div
-              className={`${trParcel[0]?.currentStatus === 'rejected' ? 'flex' : 'hidden'
-                } absolute top-0 left-0 w-full h-full bg-red-100/90 items-center justify-center gap-4`}
-            >
-              <div
-                className={`text-lg font-bold px-4 py-2 rounded-lg ${trParcel[0]?.currentStatus === 'rejected' ? 'bg-red-500/90' : 'bg-zinc-500'
-                  } text-white`}
-              >
-                Rejected
-              </div>
-              <p className="font-bold text-xl">{trParcel[0]?.rejectedDate}</p>
-            </div>
-            <div className="flex flex-col items-center justify-center gap-1">
-              <div className="flex gap-1 items-center">
-                <div
-                  className={`text-lg font-bold px-4 py-2 rounded-lg ${trParcel[0]?.currentStatus === 'pending' ? 'bg-yellow-500/90' : 'bg-zinc-500'
-                    } text-white`}
-                >
-                  Pending
-                </div>
-                <FaArrowRightLong className="text-4xl text-gray-500" />
-              </div>
-              <p className="text-sm max-w-[150px] font-light italic">
-                {trParcel[0]?.createdAt ? formatReadableDate(trParcel[0]?.createdAt) : ''}
-              </p>
-            </div>
-
-            <div className="flex flex-col items-center gap-1">
-              <div className="flex items-center">
-                <div
-                  className={`text-lg font-bold px-4 py-2 rounded-lg ${trParcel[0]?.currentStatus === 'approved' ? 'bg-blue-500/90' : 'bg-zinc-500'
-                    } text-white`}
-                >
-                  Approved
-                </div>
-                <FaArrowRightLong className="text-4xl text-gray-500" />
-              </div>
-              <p className="text-sm max-w-[150px] font-light italic">
-                {trParcel[0]?.approvalDate ? formatReadableDate(trParcel[0]?.approvalDate) : ''}
-              </p>
-            </div>
-
-            <div className="flex flex-col items-center gap-1">
-              <div className="flex items-center">
-                <div
-                  className={`text-lg font-bold px-4 py-2 rounded-lg ${trParcel[0]?.currentStatus === 'in_transit' ? 'bg-green-500/90' : 'bg-zinc-500'
-                    } text-white`}
-                >
-                  In Route
-                </div>
-                <FaArrowRightLong className="text-4xl text-gray-500" />
-              </div>
-              <p className="text-sm max-w-[150px] font-light italic">
-                {trParcel[0]?.transitDate ? formatReadableDate(trParcel[0]?.transitDate) : ''}
-              </p>
-            </div>
-
-            <div className="flex flex-col items-center gap-1">
-              <div
-                className={`text-lg font-bold px-4 py-2 rounded-lg ${trParcel[0]?.currentStatus === 'delivered' ? 'bg-purple-500/90' : 'bg-zinc-500'
-                  } text-white`}
-              >
-                Delivered
-              </div>
-              <p className="text-sm max-w-[150px] font-light italic">
-                {trParcel[0]?.deliveredDate ? formatReadableDate(trParcel[0]?.deliveredDate) : ''}
-              </p>
-            </div>
-          </div>
         </div>
       </div>
     </div>
   );
 };
 
-export default UserDashboard;
+export default SenderDashboard;

@@ -7,12 +7,14 @@ import About from "../pages/About";
 import ParcelForm from "../pages/Parcel/ParcelForm";
 import Register from "../pages/Register";
 import Login from "../pages/Login";
-import UserDashboard from "../AllDashboard/UserDashboard";
+import SenderDashboard from "../AllDashboard/SenderDashboard";
 import Dashboard from "../AllDashboard/Dashboard";
 import AdminDashboard from "../AllDashboard/AdminDashboard";
 import NotFound from "../component/NotFound";
 import CreateAdmin from "../component/CreateAdmin";
 import Contact from "../pages/Contact";
+import ReceiverDashboard from "../AllDashboard/ReceiverDashboard";
+import MoreInfo from "../AllDashboard/MoreInfo";
 
 const router = createBrowserRouter([
     {
@@ -58,11 +60,18 @@ const router = createBrowserRouter([
         children: [
             {
                 path: 'userDashboard/:id',
-                element: <UserDashboard />
+                element: <SenderDashboard />
             },
             {
                 path: "adminDashboard",
                 element: <AdminDashboard />
+            },{
+                path: "receiverDashboard/:id",
+                element: <ReceiverDashboard/>
+            },
+            ,{
+                path: "more_info/:id",
+                element: <MoreInfo/>
             },
             {
                 path: "create-admin",

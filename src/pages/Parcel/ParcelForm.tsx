@@ -39,14 +39,13 @@ const ParcelForm: React.FC = () => {
   const [weight, setWeight] = useState<string>('');
 
 
-console.log(meData.currentUser.email)
   useEffect(() => {
     meRefetch();
-  }, [meRefetch]);
+  }, [ meRefetch, meData]);
 useEffect(() => {
 setSenderName(meData?.currentUser?.name)
 setSenderEmail(meData?.currentUser?.email)
-},[])
+},[createParcel])
   if (isLoading) {
     return <RegLoader />;
   }
