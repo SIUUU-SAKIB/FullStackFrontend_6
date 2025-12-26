@@ -19,7 +19,7 @@ const SenderDashboard = () => {
   const { id: userId } = useParams();
   const { data: meData, refetch: meRefetch } = useMeQuery(undefined);
   const { data: parcelData, isLoading: parcelLoading, isError: parcelError, refetch: parcelRefetch } = useGetParcelByUserQuery(userId);
-  const { data: receiverData, isError, refetch: receiverRefetch } = useGetReceiverParcelQuery(meData?.currentUser?.email || meData?.currentUser?.user?.email)
+  const { data: receiverData, isError, refetch: receiverRefetch } = useGetReceiverParcelQuery(meData?.currentUser?.email)
 
   const [incoming, setIncoming] = useState(false);
   const [sent, setSent] = useState(true);
@@ -35,15 +35,15 @@ const SenderDashboard = () => {
   const [trParcel, setTrParcel] = useState([]);
   const [all, setAll] = useState(false);
 
-  useEffect(() => {
-    meRefetch();
-    receiverRefetch()
-    parcelRefetch();
-    const parcelFiltered = parcelData?.data?.[0]?.filter((e) => e.trackingNumber === trcNum) || [];
-    const receiverFiltered = receiverData?.data?.filter((e) => e.trackingNumber === trcNum) || [];
-    const filtered = [...parcelFiltered, ...receiverFiltered];
-    setTrParcel(filtered);
-  }, [trcNum]);
+  // useEffect(() => {
+  //   meRefetch();
+  //   receiverRefetch()
+  //   parcelRefetch();
+  //   const parcelFiltered = parcelData?.data?.[0]?.filter((e) => e.trackingNumber === trcNum) || [];
+  //   const receiverFiltered = receiverData?.data?.filter((e) => e.trackingNumber === trcNum) || [];
+  //   const filtered = [...parcelFiltered, ...receiverFiltered];
+  //   setTrParcel(filtered);
+  // }, [trcNum]);
 
   if (parcelLoading) {
     return <RegLoader />;

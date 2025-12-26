@@ -4,20 +4,21 @@ import { FaPhoneAlt } from "react-icons/fa";
 import { MdOutlineMailOutline } from "react-icons/md";
 import { TbAddressBookOff } from "react-icons/tb";
 import Swal from "sweetalert2";
-import { useApproveParcelMutation, useCancelParcelMutation, useGetParcelByUserQuery, useGetReceiverParcelQuery } from "../redux/slices/parcelApi";
-import { contextApi } from "../ContextProvider";
+import { useApproveParcelMutation, useCancelParcelMutation, useGetParcelByUserQuery, useGetReceiverParcelQuery } from "../slices/parcelApi";
+import { contextApi } from "../../ContextProvider";
 import { IoCopyOutline } from "react-icons/io5";
 import { Link } from "react-router-dom";
-const Card = ({ parcel, meData, parcelRefetch, sent, incoming, status }) => {
-console.log(meData.currentUser.email)
-  const { data: senderData, isError, refetch } = useGetParcelByUserQuery(meData?.currentUser?._id)
+const RecCard = ({ parcel, meData, parcelRefetch, sent, incoming, status }) => {
+    console.log(parcel)
+  const { data: receiverData, isError, refetch: receiverRefetch } = useGetReceiverParcelQuery(meData?.currentUser?.email)
+console.log(receiverData)
   const [filteredParcel, setFilteredParcel] = useState([])
   const { setTrcNum } = useContext(contextApi);
   const [deleteItem, { isLoading }] = useCancelParcelMutation();
   const [approveParcel] = useApproveParcelMutation()
-
+console.log(receiverData?.data)
   useEffect(() => {
-    const filteredParcels = senderData?.data[0]?.filter((e) => {
+    const filteredParcels = receiverData?.data?.filter((e) => {
       if (status === "pending") {
         return e.currentStatus === "pending";
       }
@@ -42,7 +43,7 @@ console.log(meData.currentUser.email)
     });
     setFilteredParcel(filteredParcels);
   }, [status, incoming]);
-console.log(filteredParcel)
+// console.log(filteredParcel)
   const receivedBtn = id => {
     Swal.fire({
       title: "Are you sure?",
@@ -93,7 +94,7 @@ const copyToClipboard = async(text:string) => {
   return (
 
   parcel?.data[0]?.length === 0 ? (<p className="text-white z-10 font-bold text-2xl px-4">No Parcel to show 😔</p>) : (
-    filteredParcel.map(e => <div key={e._id} className="max-w-[450px] bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex flex-col gap-4 z-10">
+    filteredParcel?.map(e => <div key={e._id} className="max-w-[450px] bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex flex-col gap-4 z-10">
       
       {/* Status Section */}
       <div className="bg-amber-50 border border-amber-100 rounded-lg p-4 flex flex-col items-center gap-2">
@@ -138,22 +139,22 @@ const copyToClipboard = async(text:string) => {
         </div>
       </div>
 
-      {/* Receiver Info */}
+      {/* Sender Info */}
       <div className="bg-gray-50 rounded-lg p-4 space-y-1">
         <p className="text-sm font-semibold text-gray-500 mb-2">
-          Receiver Information
+          Sender Information
         </p>
 
         <p className="text-sm font-medium">
-          <span className="text-gray-400">Name:</span> {e.receiver.name}
+          <span className="text-gray-400">Name:</span> {e.sender.name}
         </p>
         <p className="text-sm font-medium">
-          <span className="text-gray-400">Email:</span> {e.receiver.email}
+          <span className="text-gray-400">Email:</span> {e.sender.email}
         </p>
         <p className="text-sm font-medium">
-          <span className="text-gray-400">Phone:</span>{e.receiver.phone}</p>
+          <span className="text-gray-400">Phone:</span>{e.sender.phone}</p>
         <p className="text-sm font-medium">
-          <span className="text-gray-400">Address:</span> {e.receiver.address}
+          <span className="text-gray-400">Address:</span> {e.sender.address}
         </p>
       </div>
 
@@ -185,4 +186,4 @@ const copyToClipboard = async(text:string) => {
 
 };
 
-export default Card;
+export default RecCard;
