@@ -283,14 +283,7 @@ const AdminDashboard: React.FC = () => {
           >
             Users: {totalUsers}
           </div>
-          {meData?.currentUser?.role === "super_admin" && (
-            <div
-              onClick={() => { setAdmins(true); setUsers(false); setParcel(false); }}
-              className="py-6 w-1/2 text-center font-bold text-2xl bg-fucassia-500/50 border-black/50 cursor-pointer hover:bg-green-400 hover:text-white transition duration-200"
-            >
-              Admins: {allAdmins?.data?.length || 0}
-            </div>
-          )}
+          
           <div
             onClick={() => { setUsers(false); setAdmins(false); setParcel(true); }}
             className="py-6 w-1/2 text-center font-bold text-2xl bg-blue-500/50 border-black/50 cursor-pointer hover:bg-blue-500 hover:text-white transition duration-200"

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { useApproveParcelMutation, useCancelParcelMutation, useGetParcelByIdQuery, useGetParcelByUserQuery } from '../redux/slices/parcelApi'
+import { useApproveParcelMutation, useCancelParcelMutation, useGetParcelByIdQuery, useGetParcelByUserQuery, useDeleteParcelMutation } from '../redux/slices/parcelApi'
+
 import { format } from "date-fns"
 import Swal from 'sweetalert2'
 import { useMeQuery } from '../redux/slices/authApi'
@@ -9,6 +10,7 @@ const MoreInfo = () => {
     const { id } = useParams()
     const { data: meData, refetch: meRefetch } = useMeQuery(undefined);
     const [approveParcel] = useApproveParcelMutation()
+    const [deleteParcel] = useDeleteParcelMutation()
     const { data: parcelData, isLoading: parcelLoading, isError: parcelError, refetch: parcelRefetch } = useGetParcelByUserQuery(meData?.currentUser?._id);
     const { data, refetch } = useGetParcelByIdQuery(id)
     const [deleteItem, { isLoading }] = useCancelParcelMutation();
@@ -33,40 +35,36 @@ const MoreInfo = () => {
             : "N/A"
 
 
-    const cancelBtn = (trackingNumber: string) => {
+    const cancelBtn = (id: string) => {
         Swal.fire({
             title: "Are you sure?",
-            text: "You really want to cancel this parcel?",
+            text: "You really want to delete this parcel?",
             icon: "warning",
             showCancelButton: true,
             confirmButtonColor: "#3085d6",
             cancelButtonColor: "#d33",
-            confirmButtonText: "Yes, cancel it!",
+            confirmButtonText: "Yes, Delete!"
         }).then(async (result) => {
             if (result.isConfirmed) {
                 try {
-                    await deleteItem({ trackingNumber });
-                    parcelRefetch();
-                    Swal.fire({
-                        title: "Cancelled!",
-                        text: "Parcel has been cancelled",
-                        icon: "success",
-                    });
-                    navigate(`/dashboard/userDashboard/${meData?.currentUser?._id}`)
+                    await deleteParcel({
+                        "id": id
+                    })
+                    parcelRefetch()
+                    meData?.currentUser?.role === "sender" ? navigate(`/dashboard/senderDashboard/${meData?.currentUser?._id}`) : navigate(`/dashboard/receiverDashboard/${meData?.currentUser?._id}`)
                 } catch (error) {
-                    console.log(error);
-                    Swal.fire({
-                        title: "Error!",
-                        text: "Something went wrong. Please try again.",
-                        icon: "error",
-                    });
+                    console.log(error)
                 }
+                Swal.fire({
+                    text: "Parcel Deleted Succesfully 😍",
+                    icon: "success"
+                });
             }
         });
-    };
+    }
 
 
-    const acceptBtn =  (_id: string) => {
+    const acceptBtn = (_id: string) => {
         console.log(_id)
         Swal.fire({
             title: "Are you sure?",
@@ -262,8 +260,8 @@ const MoreInfo = () => {
                         </div>
                     </div>
                     <>
-                        {parcel?.currentStatus === "accepted" || parcel?.currentStatus === "rejected" && (
-                            <button onClick={() => cancelBtn(parcel?.trackingNumber)} className="w-full text-center py-2 bg-red-500/80 text-white font-semibold text-lg rounded-sm mt-2 cursor-pointer">
+                        {(parcel?.currentStatus === "accepted" || parcel?.currentStatus === "rejected") && (
+                            <button onClick={() => cancelBtn(parcel?._id)} className="w-full text-center py-2 bg-red-500/80 text-white font-semibold text-lg rounded-sm mt-2 cursor-pointer">
                                 Remove Parcel
                             </button>
                         )}
@@ -278,7 +276,7 @@ const MoreInfo = () => {
                                 Accept Parcel
                             </button>
                         )}
-                        
+
                     </>
                 </div>
             </div>

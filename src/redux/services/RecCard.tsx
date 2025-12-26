@@ -9,16 +9,15 @@ import { contextApi } from "../../ContextProvider";
 import { IoCopyOutline } from "react-icons/io5";
 import { Link } from "react-router-dom";
 const RecCard = ({ parcel, meData, parcelRefetch, sent, incoming, status }) => {
-    console.log(parcel)
   const { data: receiverData, isError, refetch: receiverRefetch } = useGetReceiverParcelQuery(meData?.currentUser?.email)
-console.log(receiverData)
+
   const [filteredParcel, setFilteredParcel] = useState([])
   const { setTrcNum } = useContext(contextApi);
   const [deleteItem, { isLoading }] = useCancelParcelMutation();
   const [approveParcel] = useApproveParcelMutation()
-console.log(receiverData?.data)
+
   useEffect(() => {
-    const filteredParcels = receiverData?.data?.filter((e) => {
+    const filteredParcels = parcel?.data?.filter((e) => {
       if (status === "pending") {
         return e.currentStatus === "pending";
       }

@@ -53,7 +53,7 @@ const Navbar: React.FC = () => {
       return `/dashboard/adminDashboard`;
     } else if(role === "sender") {
       return `/dashboard/userDashboard/${userIdStr}`
-    }else{
+    }else if(role === "receiver"){
       return `/dashboard/receiverDashboard/${userIdStr}`
     }
   };

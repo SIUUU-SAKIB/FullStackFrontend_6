@@ -34,39 +34,20 @@ const navigate = useNavigate()
   const { trcNum, setTrcNum } = useContext(contextApi);
   const [trParcel, setTrParcel] = useState([]);
   const [all, setAll] = useState(false);
-
-  useEffect(() => {
-    meRefetch();
-    receiverRefetch()
-    parcelRefetch();
-    const parcelFiltered = parcelData?.data?.[0]?.filter((e) => e.trackingNumber === trcNum) || [];
-    const receiverFiltered = receiverData?.data?.filter((e) => e.trackingNumber === trcNum) || [];
-    const filtered = [...parcelFiltered, ...receiverFiltered];
-    setTrParcel(filtered);
-  }, [trcNum]);
-
+console.log(meData)
   if (parcelLoading) {
     return <RegLoader />;
   }
+// useEffect(() => {
+//   if (meData?.currentUser?.email) {
+//     receiverRefetch();
+//   }
+// }, [meData?.currentUser?.email]);
 
   if (parcelError) {
     return <div>Error loading parcels!</div>;
   }
 
-  function formatReadableDate(dateString) {
-    if (!dateString) return '';
-
-    const date = new Date(dateString);
-    return date.toLocaleString('en-US', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-    });
-  }
 
   return (
     <div className="bg-[url('https://wallpapers.com/images/featured/cool-trucks-cdvn4ttk7o8geggz.jpg')] min-h-screen max-w-screen bg-center bg-cover bg-no-repeat relative">
@@ -119,7 +100,7 @@ const navigate = useNavigate()
                 className="text-2xl cursor-pointer"
                 onClick={(e) => {
                   e.preventDefault();
-                  navigate('/dashboard/more_info/${}')
+                  navigate(`/dashboard/more_info/${tracking}`)
                 }}
               />
             </div>
@@ -143,7 +124,8 @@ const navigate = useNavigate()
           </div>
           <p className='text-center w-full z-10 text-white font-bold text-2xl border-b'>{parcelData?.data[0]?.length === 0 ? "" :"All Parcels"}</p>
           <div className="grid grid-cols-1 md:grid-cols-2 place-items-center justify-items-center gap-4 py-2 w-full">
-            <RecCard
+           {
+            receiverData?.data.length === 0 ? (<p className='text-2xl font-bold  text-white z-10'>No parcel to show</p>) :( <RecCard
               parcel={receiverData}
               sent={sent}
               delivered={delivered}
@@ -153,7 +135,8 @@ const navigate = useNavigate()
               inRoute={inRoute}
               status={status}
               parcelRefetch={parcelRefetch}
-            />
+            />)
+           }
           </div>
         </div>
 
